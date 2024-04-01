@@ -19,12 +19,14 @@ class Facility:
       for j in range(department.height):
         if self.grid[y+j][x+i] is not None:
           return False
-
+        else:
+          self.grid[y+j][x+i] = department
+          return True
     # Place the department on the grid
-    for i in range(department.width):
-      for j in range(department.height):
-        self.grid[y+j][x+i] = department
-    return True
+    # for i in range(department.width):
+    #   for j in range(department.height):
+      
+    
 
 # Department class to represent different functional areas
 class Department:

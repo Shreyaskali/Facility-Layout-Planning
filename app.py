@@ -20,76 +20,37 @@ st.write('There are ', n, 'departments')
 # st.write(*range(1, n+1))
 st.header("Input for Department Dimensions") # Part 3
 dept = []
+data = []
 for i in range(n):
-    dept.append(chr(i + ord('A')))
+    d = chr(i + ord('A'))
+    dept.append(d)
+    data.append([0, 0, []])
 
-# st.write(dept)
+# option = st.selectbox('Select dept for input', dept)
+# st.write(data)
 
-df = pd.DataFrame({
-    'first column': dept
-    })
+for d in dept:
+  option = d
+  flag = 0
+  left_column, mid, right_column = st.columns(3)
+  left_column.write(f"Dimensions for Department {option}:")
+  # st.write()
+  idx = ord(option) - ord('A')
+  L = left_column.slider('L')
+  data[idx][0] = L
+  W = left_column.slider('W')
+  data[idx][1] = W
 
-option = st.selectbox(
-    'Select dept for input',
-     df['first column'])
+  with right_column:
+      selected = st.multiselect('Select Adjacency list for department', dept)
+      data[idx][2] = selected
+      st.write('You selected:', selected)
 
-# st.write('You selected: ', option)
-
-
-left_column, mid, right_column = st.columns(3)
-# You can use a column just like st.sidebar:
-left_column.write(f"Dimensions for Department {option}:")
-L = left_column.slider('L')
-W = left_column.slider('W')
-# st.write(f"Department Length is {L}")
-# st.write(f"Department Length is {W}")
-# left_column.button('Department')
-
-# Or even better, call Streamlit functions inside a "with" block:
-with right_column:
-    # chosen = st.radio(
-    #     'Adjacency list',
-    #     ("A", "B", "C", "D"))
-    # st.write(f"You selected {chosen}!")
-
-    # if 'dummy_data' not in st.session_state.keys():
-    #     dummy_data = ['A','B','C','D','E']
-    #     st.session_state['dummy_data'] = dummy_data
-    # else:
-    #     dummy_data = st.session_state['dummy_data']
-
-    # def checkbox_container(data):
-    #     st.write('Select Adjacency list for Dept A')
-    #     # new_data = st.text_input('Enter country Code to add')
-    #     # cols = st.columns(2)
-    #     # # if cols[0].button('Add Coutry'):
-    #     # #     dummy_data.append(new_data)
-    #     # if cols[0].button('Select All'):
-    #     #     for i in data:
-    #     #         st.session_state['dynamic_checkbox_' + i] = True
-    #     #     st.experimental_rerun()
-    #     # if cols[1].button('UnSelect All'):
-    #     #     for i in data:
-    #     #         st.session_state['dynamic_checkbox_' + i] = False
-    #     #     st.experimental_rerun()
-    #     for i in data:
-    #         st.checkbox(i, key='dynamic_checkbox_' + i)
-
-    # def get_selected_checkboxes():
-    #     return [i.replace('dynamic_checkbox_','') for i in st.session_state.keys() if i.startswith('dynamic_checkbox_') and st.session_state[i]]
-
-
-    # checkbox_container(dummy_data)
-    # st.write('You selected:')
-    # adj = get_selected_checkboxes()
-    # st.write(adj)
-    selected = st.multiselect('Select Adjacency list for department', dept)
-    st.write('You selected:', selected)
-
-flag = st.button("Submit")
-if flag:
-    pass
+  flag = st.button("Submit")
+  if flag:
+      st.write(data)
  
+st.write(data)
 st.header("Output") # Part 4
 # -------------------------------------------------------------------------------------
 #Importing necessary libraries
@@ -113,12 +74,9 @@ class Facility:
       for j in range(department.height):
         if self.grid[y+j][x+i] is not None:
           return False
-
-    # Place the department on the grid
-    for i in range(department.width):
-      for j in range(department.height):
-        self.grid[y+j][x+i] = department
-    return True
+        else:
+          self.grid[y+j][x+i] = department
+          return True
 
 # Department class to represent different functional areas
 class Department:
@@ -137,7 +95,7 @@ def ALDEP(facility, departments):
   for department in departments:
     placed = False
     # Depending on layout precision the number of attempts can be formulated
-    for _ in range(100):  # Maximum of 100 attempts
+    for _ in range(1000):  # Maximum of 100 attempts
       x = random.randint(0, facility.width - department.width)
       y = random.randint(0, facility.height - department.height)
       if facility.place_department(department, x, y):
@@ -191,7 +149,9 @@ departments = [
   # Add more departments as needed
 ]
 
-facility = Facility(200, 50)
+
+
+facility = Facility(F_l, F_w)
 # departments = [L, W, adj]
 
 output = ALDEP(facility, departments)
