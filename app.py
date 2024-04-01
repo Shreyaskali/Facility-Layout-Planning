@@ -6,8 +6,10 @@ st.write("This is a simple text. This will be description for the project")
 
 st.header("Input for Facility Dimensions") # Part 1
 st.write("Part 1: Input Facility width and height")
-F_w = st.number_input("Insert a Facility Width", value=0, placeholder="Width...")
-F_l = st.number_input("Insert a Facility Length", value=0, placeholder="Height...")
+
+left_column, right_column = st.columns(2)
+F_w = left_column.number_input("Insert a Facility Width", value=0, placeholder="Width...")
+F_l = right_column.number_input("Insert a Facility Length", value=0, placeholder="Height...")
 st.write('The facilty width is ', F_w)
 st.write('The facility length is ', F_l)
 
@@ -189,7 +191,7 @@ departments = [
   # Add more departments as needed
 ]
 
-facility = Facility(F_l, F_w)
+facility = Facility(200, 50)
 # departments = [L, W, adj]
 
 output = ALDEP(facility, departments)
