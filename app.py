@@ -8,9 +8,9 @@ st.write("This is a simple text. This will be description for the project")
 
 st.header("Input for Facility Dimensions") # Part 1
 
-left_column, right_column = st.columns(2)
-F_w = left_column.number_input("Insert a Facility Width", value=0, placeholder="Width...")
-F_l = right_column.number_input("Insert a Facility Length", value=0, placeholder="Height...")
+left, right = st.columns(2)
+F_w = left.number_input("Insert a Facility Width", value=0, placeholder="Width...")
+F_l = right.number_input("Insert a Facility Length", value=0, placeholder="Height...")
 # st.write('The facilty width is ', F_w)
 # st.write('The facility length is ', F_l)
 
@@ -27,27 +27,29 @@ for i in range(n):
     dept.append(d)
     data.append([0, 0, []])
 
-option = st.selectbox('Select dept for input', dept)
-st.write(data)
+# option = st.selectbox('Select dept for input', dept)
+# st.write(data)
 
-st.write(f"Dimensions for Department {option}:")
-left_column, mid, right_column = st.columns(3)
-# st.write()
-idx = ord(option) - ord('A')
-L = left_column.number_input('L', value=0)
-data[idx][0] = L
-W = mid.number_input('W', value=0)
-data[idx][1] = W
+for d in dept:
+  st.write(f"Dimensions for Department {d}:")
+  left, mid, right = st.columns(3)
+  # st.write()
+  idx = ord(d) - ord("A")
+  # st.write(idx)
+  L = left.number_input('L', idx) # bug -> min value of element is being idx
+  data[idx][0] = L
+  W = mid.number_input('W', idx) # same bug
+  data[idx][1] = W
 
-with right_column:
-    selected = st.multiselect('Select Adjacency list for department', dept)
-    data[idx][2] = selected
-    # st.write('You selected:', selected)
+  with right:
+      selected = st.multiselect('Adjacency list', dept, key=idx)
+      data[idx][2] = selected
+      # st.write('You selected:', selected)
 
 flag = st.button("Submit")
 if flag:
     st.write(data)
- 
+  
 st.header("Output") # Part 4
 # -------------------------------------------------------------------------------------
 #Importing necessary libraries
