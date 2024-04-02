@@ -1,17 +1,18 @@
 import streamlit as st
 import pandas as pd
 
+st.set_page_config(page_title="ALDEP")
 st.title("ALDEP")
+
 st.write("This is a simple text. This will be description for the project")
 
 st.header("Input for Facility Dimensions") # Part 1
-st.write("Part 1: Input Facility width and height")
 
 left_column, right_column = st.columns(2)
 F_w = left_column.number_input("Insert a Facility Width", value=0, placeholder="Width...")
 F_l = right_column.number_input("Insert a Facility Length", value=0, placeholder="Height...")
-st.write('The facilty width is ', F_w)
-st.write('The facility length is ', F_l)
+# st.write('The facilty width is ', F_w)
+# st.write('The facility length is ', F_l)
 
 st.header("Input number of departments") # Part 2
 n = st.slider("N", 1, 10)
@@ -26,31 +27,27 @@ for i in range(n):
     dept.append(d)
     data.append([0, 0, []])
 
-# option = st.selectbox('Select dept for input', dept)
-# st.write(data)
-
-for d in dept:
-  option = d
-  flag = 0
-  left_column, mid, right_column = st.columns(3)
-  left_column.write(f"Dimensions for Department {option}:")
-  # st.write()
-  idx = ord(option) - ord('A')
-  L = left_column.slider('L')
-  data[idx][0] = L
-  W = left_column.slider('W')
-  data[idx][1] = W
-
-  with right_column:
-      selected = st.multiselect('Select Adjacency list for department', dept)
-      data[idx][2] = selected
-      st.write('You selected:', selected)
-
-  flag = st.button("Submit")
-  if flag:
-      st.write(data)
- 
+option = st.selectbox('Select dept for input', dept)
 st.write(data)
+
+st.write(f"Dimensions for Department {option}:")
+left_column, mid, right_column = st.columns(3)
+# st.write()
+idx = ord(option) - ord('A')
+L = left_column.number_input('L', value=0)
+data[idx][0] = L
+W = mid.number_input('W', value=0)
+data[idx][1] = W
+
+with right_column:
+    selected = st.multiselect('Select Adjacency list for department', dept)
+    data[idx][2] = selected
+    # st.write('You selected:', selected)
+
+flag = st.button("Submit")
+if flag:
+    st.write(data)
+ 
 st.header("Output") # Part 4
 # -------------------------------------------------------------------------------------
 #Importing necessary libraries
@@ -149,13 +146,11 @@ departments = [
   # Add more departments as needed
 ]
 
-
-
 facility = Facility(F_l, F_w)
 # departments = [L, W, adj]
 
-output = ALDEP(facility, departments)
-print(output)
-
-
-# -----------------------
+try:
+  output = ALDEP(facility, departments)
+  print(output)
+except ValueError:
+  st.warning("Insufficient Facility Dimensions")
