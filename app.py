@@ -1,5 +1,6 @@
 import streamlit as st
-import pandas as pd
+import matplotlib.pyplot as plt
+import random
 
 st.set_page_config(page_title="ALDEP")
 st.title("ALDEP")
@@ -52,10 +53,6 @@ if flag:
   
 st.header("Output") # Part 4
 # -------------------------------------------------------------------------------------
-#Importing necessary libraries
-import matplotlib.pyplot as plt
-import random
-
 # Facility class to represent the building space
 class Facility:
   def __init__(self, width, height):
