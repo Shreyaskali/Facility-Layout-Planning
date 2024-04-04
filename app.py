@@ -1,6 +1,7 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import random
+import uuid
 
 st.set_page_config(page_title="ALDEP")
 st.title("ALDEP")
@@ -12,15 +13,13 @@ st.header("Input for Facility Dimensions") # Part 1
 left, right = st.columns(2)
 F_w = left.number_input("Insert a Facility Width", value=0, placeholder="Width...")
 F_l = right.number_input("Insert a Facility Length", value=0, placeholder="Height...")
-# st.write('The facilty width is ', F_w)
-# st.write('The facility length is ', F_l)
 
-st.header("Input number of departments") # Part 2
+
+st.header("Input number of departments")
 n = st.slider("N", 1, 10)
 st.write('There are ', n, 'departments')
 
-# st.write(*range(1, n+1))
-st.header("Input for Department Dimensions") # Part 3
+st.header("Input for Department Dimensions")
 dept = []
 data = []
 for i in range(n):
@@ -28,30 +27,42 @@ for i in range(n):
     dept.append(d)
     data.append([0, 0, []])
 
-# option = st.selectbox('Select dept for input', dept)
-# st.write(data)
+def checkArea(l,b,data):
+  area = 0
+  for i in range(n):
+    area += data[i][0]*data[i][1]
+  if(area>l*b):
+    st.warning("Insufficient Facility Dimensions!")
+    return 0
+  else:
+    return 1
 
+val = 1
+flag = 0
 for d in dept:
-  st.write(f"Dimensions for Department {d}:")
-  left, mid, right = st.columns(3)
-  # st.write()
+  
+  very_left,left, mid, right = st.columns(4)
+  very_left.write(f"Department {d}:")
+  
   idx = ord(d) - ord("A")
-  # st.write(idx)
-  L = left.number_input('L', idx) # bug -> min value of element is being idx
+
+  L = left.number_input('L',value=0,key=val)
+
   data[idx][0] = L
-  W = mid.number_input('W', idx) # same bug
+  W = mid.number_input('W',value=0,key=val+1)
+  
   data[idx][1] = W
 
   with right:
-      selected = st.multiselect('Adjacency list', dept, key=idx)
+      selected = st.multiselect('Adjacency list', dept, key=val+2)
       data[idx][2] = selected
-      # st.write('You selected:', selected)
-
-flag = st.button("Submit")
-if flag:
+  val+=3
+ans = st.button("Submit")
+if ans:
     st.write(data)
+    flag = checkArea(F_l, F_w, data)
   
-st.header("Output") # Part 4
+st.header("Output") 
 # -------------------------------------------------------------------------------------
 # Facility class to represent the building space
 class Facility:
@@ -71,7 +82,7 @@ class Facility:
         if self.grid[y+j][x+i] is not None:
           return False
         else:
-          self.grid[y+j][x+i] = department
+          self.grid[y+j][x+i] = department  # logical error
           return True
 
 # Department class to represent different functional areas
@@ -91,7 +102,7 @@ def ALDEP(facility, departments):
   for department in departments:
     placed = False
     # Depending on layout precision the number of attempts can be formulated
-    for _ in range(1000):  # Maximum of 100 attempts
+    for _ in range(100):  # Maximum of 100 attempts
       x = random.randint(0, facility.width - department.width)
       y = random.randint(0, facility.height - department.height)
       if facility.place_department(department, x, y):
@@ -102,7 +113,7 @@ def ALDEP(facility, departments):
       print(f"Failed to place department: {department.name}")
 
   # Create a color map for departments
-  color_map = {'Department A': 'red', 'Department B': 'blue', 'Department C': 'green'}
+  color_map = {'A': '#03071e', 'B': '#370617', 'C': '#6a040f','D':'#9d0208','E':'#d00000','F':'#dc2f02','G':'#e85d04','H':'#f48c06','I':'#faa307','J':'#ffba08'}
 
   # Create the visualization using Matplotlib
   fig, ax = plt.subplots()
@@ -112,12 +123,12 @@ def ALDEP(facility, departments):
   cell_height = 1
 
   # Iterate through the grid and create rectangles for departments
-  for y in range(facility.height):
-    for x in range(facility.width):
-      department = facility.grid[y][x]
+  for x in range(facility.height):
+    for y in range(facility.width):
+      department = facility.grid[x][y]
       if department:
         color = color_map.get(department.name, 'gray')  # Default gray for unknown departments
-        rect = plt.Rectangle((x * cell_width, facility.height - (y + 1) * cell_height),
+        rect = plt.Rectangle((y * cell_width, facility.height - (x + 1) * cell_height),
                              department.width * cell_width, department.height * cell_height, color=color)
         ax.add_patch(rect)
 
@@ -138,12 +149,22 @@ def ALDEP(facility, departments):
 
 # Example usage
 # facility = Facility(200,50)
-departments = [
-  Department("Department A", 40, 15, ["Department B"]),
-  Department("Department B", 8, 20),
-  Department("Department C", 15, 20, ["Department A", "Department B"]),
-  # Add more departments as needed
-]
+# departments = [
+#   Department("A", 40, 15, ["B"]),
+#   Department("B", 8, 20),
+#   Department("C", 15, 20, ["A", "B"]),
+#   # Add more departments as needed
+# ]
+
+
+# Dynamic addition of departments
+departments =[]
+if flag:
+  for i in range(int(n)):
+    departments.append(Department(dept[i],int(data[i][0]),int(data[i][1]),data[i][2]))
+
+print(departments)
+
 
 facility = Facility(F_l, F_w)
 # departments = [L, W, adj]
